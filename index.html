@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>سند قبض</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+      background: #f9f9f9;
+      direction: rtl;
+    }
+    .no-print {
+      display: block;
+      margin-bottom: 15px;
+    }
+    @media print {
+      .no-print {
+        display: none;
+      }
+      textarea, input {
+        border: none;
+        outline: none;
+      }
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 8px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    .section {
+      margin-bottom: 20px;
+      background: #fff;
+      padding: 15px;
+      border-radius: 6px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+
+  <h2>سند قبض</h2>
+
+  <div class="section">
+    <label>اسم العميل:</label>
+    <input type="text" placeholder="اكتب اسم العميل">
+
+    <label>التاريخ:</label>
+    <input type="date">
+
+    <label>المبلغ:</label>
+    <input type="number" placeholder="مثال: 100">
+
+    <label>طريقة الدفع:</label>
+    <select>
+      <option>نقدًا</option>
+      <option>شيك</option>
+      <option>تحويل بنكي</option>
+      <option>أخرى</option>
+    </select>
+
+    <label>سبب القبض:</label>
+    <textarea rows="2" placeholder="مثال: دفعة على الحساب، تسديد فاتورة رقم ..."></textarea>
+
+    <label>ملاحظات:</label>
+    <textarea rows="2" placeholder="أي ملاحظات إضافية (اختياري)"></textarea>
+  </div>
+
+  <div class="section">
+    <p>توقيع المستلم: ___________________________</p>
+  </div>
+
+  <button class="no-print" onclick="window.print()">🖨️ طباعة</button>
+
+</body>
+</html>
