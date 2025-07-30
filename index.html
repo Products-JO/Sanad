@@ -21,10 +21,23 @@
       .no-print {
         display: none;
       }
-      textarea, input {
+      textarea, input, select {
         border: none;
         outline: none;
+        -webkit-appearance: none;
       }
+      input[type="date"]::-webkit-calendar-picker-indicator {
+        display: none;
+      }
+      .print-only {
+        display: block !important;
+      }
+      .screen-only {
+        display: none !important;
+      }
+    }
+    .print-only {
+      display: none;
     }
     h2 {
       text-align: center;
@@ -47,6 +60,20 @@
       border-radius: 6px;
       box-shadow: 0 0 5px rgba(0,0,0,0.1);
     }
+    .payment-print {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    .payment-box {
+      border: 1px solid #000;
+      padding: 4px 8px;
+      min-width: 100px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -61,28 +88,103 @@
     <input type="date">
 
     <label>المبلغ:</label>
-    <input type="number" placeholder="مثال: 100">
+    <input type="number" id="amount" placeholder="مثال: 2500">
 
-    <label>طريقة الدفع:</label>
-    <select>
-      <option>نقدًا</option>
-      <option>شيك</option>
-      <option>تحويل بنكي</option>
-      <option>أخرى</option>
+    <label class="screen-only">طريقة الدفع:</label>
+    <select class="screen-only" id="payment-method">
+      <option value="">اختر طريقة الدفع</option>
+      <option value="نقداً">نقداً</option>
+      <option value="شيك رقم">شيك رقم</option>
+      <option value="تحويل بنكي رقم">تحويل بنكي رقم</option>
     </select>
 
-    <label>سبب القبض:</label>
+    <!-- فقط للطباعة -->
+    <div class="print-only">
+      <label>طريقة الدفع:</label>
+      <div class="payment-print">
+        <div class="payment-box" id="payment-number-print">________</div>
+        <span id="payment-text-print">شيك رقم</span>
+      </div>
+    </div>
+
+    <label>وذلك عن:</label>
     <textarea rows="2" placeholder="مثال: دفعة على الحساب، تسديد فاتورة رقم ..."></textarea>
 
-    <label>ملاحظات:</label>
-    <textarea rows="2" placeholder="أي ملاحظات إضافية (اختياري)"></textarea>
+    <!-- الملاحظات (تُخفى عند الطباعة) -->
+    <div class="no-print">
+      <label>ملاحظات:</label>
+      <textarea rows="2" placeholder="أي ملاحظات إضافية (اختياري)"></textarea>
+    </div>
   </div>
 
   <div class="section">
     <p>توقيع المستلم: ___________________________</p>
+    <p>توقيع المحاسب: ___________________________</p>
   </div>
 
-  <button class="no-print" onclick="window.print()">🖨️ طباعة</button>
+  <div class="no-print">
+    <label>رقم الطريقة (للطباعة):</label>
+    <input type="text" id="payment-number" placeholder="مثال: 2500">
+    
+    <label>نص الطباعة (مثلاً: شيك رقم):</label>
+    <input type="text" id="payment-text" placeholder="مثال: شيك رقم">
+  </div>
+
+  <button class="no-print" onclick="preparePrint()">🖨️ طباعة</button>
+
+  <script>
+    function preparePrint() {
+      const number = document.getElementById("payment-number").value || "________";
+      const text = document.getElementById("payment-text").value || "";
+      const numberInWords = convertNumberToArabicWords(Number(number));
+
+      document.getElementById("payment-number-print").textContent = `${number} (${numberInWords})`;
+      document.getElementById("payment-text-print").textContent = text;
+
+      window.print();
+    }
+
+    // تحويل رقم إلى نص عربي
+    function convertNumberToArabicWords(number) {
+      if (isNaN(number) || number === 0) return "صفر";
+      const ones = ["", "واحد", "اثنان", "ثلاثة", "أربعة", "خمسة", "ستة", "سبعة", "ثمانية", "تسعة"];
+      const tens = ["", "عشرة", "عشرون", "ثلاثون", "أربعون", "خمسون", "ستون", "سبعون", "ثمانون", "تسعون"];
+      const hundreds = ["", "مائة", "مئتان", "ثلاثمائة", "أربعمائة", "خمسمائة", "ستمائة", "سبعمائة", "ثمانمائة", "تسعمائة"];
+
+      let word = "";
+      let n = number;
+
+      if (n >= 1000) {
+        const thousands = Math.floor(n / 1000);
+        word += (thousands === 1 ? "ألف" :
+                thousands === 2 ? "ألفان" :
+                thousands <= 10 ? ones[thousands] + " آلاف" :
+                thousands + " ألف") + " ";
+        n %= 1000;
+      }
+
+      if (n >= 100) {
+        const h = Math.floor(n / 100);
+        word += hundreds[h] + " ";
+        n %= 100;
+      }
+
+      if (n >= 10) {
+        const t = Math.floor(n / 10);
+        const o = n % 10;
+        if (n < 20 && n > 10) {
+          word += ones[o] + " " + "عشر";
+        } else {
+          if (o > 0) word += ones[o] + " و ";
+          word += tens[t];
+        }
+      } else if (n > 0) {
+        word += ones[n];
+      }
+
+      return word.trim();
+    }
+  </script>
 
 </body>
 </html>
