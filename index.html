@@ -13,46 +13,66 @@
       background: #f9f9f9;
       direction: rtl;
     }
+
     .no-print {
       display: block;
       margin-bottom: 15px;
     }
+
     @media print {
       .no-print {
         display: none;
       }
-      input, select, textarea {
+
+      input, textarea {
         border: none;
         outline: none;
         -webkit-appearance: none;
       }
+
       input[type="date"]::-webkit-calendar-picker-indicator {
         display: none;
       }
+
       .print-only {
         display: block !important;
       }
+
       .screen-only {
         display: none !important;
       }
     }
+
     .print-only {
       display: none;
     }
-    h2 {
+
+    h2, .title-input {
       text-align: center;
       margin-bottom: 20px;
+      font-size: 24px;
     }
+
+    .title-input {
+      border: none;
+      font-size: 24px;
+      text-align: center;
+      width: 100%;
+      background: transparent;
+    }
+
     label {
       display: block;
       margin: 10px 0 5px;
     }
-    input, textarea, select {
+
+    input, textarea {
       width: 100%;
       padding: 8px;
       font-size: 16px;
       box-sizing: border-box;
     }
+
     .section {
       margin-bottom: 20px;
       background: #fff;
@@ -60,58 +80,86 @@
       border-radius: 6px;
       box-shadow: 0 0 5px rgba(0,0,0,0.1);
     }
+
+    .row {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .row .field {
+      flex: 1;
+      min-width: 200px;
+    }
+
     .payment-print {
       font-size: 18px;
       margin-top: 10px;
     }
+
     .payment-box {
       border: 1px solid #000;
-      padding: 4px 8px;
+      padding: 6px 10px;
       min-width: 100px;
       text-align: center;
       display: inline-block;
-      margin-left: 8px;
+    }
+
+    .signatures {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .signature-box {
+      flex: 1;
+      border: 1px solid #000;
+      padding: 20px;
+      text-align: center;
+      min-height: 80px;
     }
   </style>
 </head>
 <body>
 
-  <h2>سند قبض</h2>
+  <div class="screen-only">
+    <input class="title-input" id="doc-title" value="سند قبض" />
+  </div>
+  <div class="print-only">
+    <h2 id="doc-title-print">سند قبض</h2>
+  </div>
 
   <div class="section">
-    <label>اسم العميل:</label>
-    <input type="text" placeholder="اكتب اسم العميل">
 
-    <label>التاريخ:</label>
-    <input type="date">
+    <div class="row">
+      <div class="field">
+        <label>اسم العميل:</label>
+        <input type="text" placeholder="اكتب اسم العميل">
+      </div>
+      <div class="field">
+        <label>التاريخ:</label>
+        <input type="date">
+      </div>
+    </div>
 
     <label>المبلغ:</label>
     <input type="number" id="amount" placeholder="مثال: 2500">
 
-    <label>طريقة الدفع:</label>
-    <select id="payment-method">
-      <option value="">اختر طريقة الدفع</option>
-      <option value="نقدًا">نقدًا</option>
-      <option value="شيك رقم">شيك رقم</option>
-      <option value="تحويل بنكي">تحويل بنكي</option>
-      <option value="أخرى">أخرى</option>
-    </select>
-
-    <!-- فقط للطباعة -->
+    <!-- يظهر فقط عند الطباعة -->
     <div class="print-only">
-      <label>طريقة الدفع:</label>
-      <div class="payment-print" id="payment-output">
-        <!-- يتم تعبئته تلقائياً -->
-      </div>
+      <label>المبلغ عند الطباعة:</label>
+      <div class="payment-print" id="payment-output"></div>
     </div>
 
     <label>وذلك عن:</label>
     <textarea rows="2" placeholder="مثال: دفعة على الحساب، تسديد فاتورة رقم ..."></textarea>
   </div>
 
-  <div class="section">
-    <p>توقيع المستلم: ___________________________</p>
-    <p>توقيع المحاسب: ___________________________</p>
+  <div class="section signatures">
+    <div class="signature-box">توقيع المستلم</div>
+    <div class="signature-box">توقيع المحاسب</div>
   </div>
 
   <button class="no-print" onclick="preparePrint()">🖨️ طباعة</button>
@@ -119,12 +167,13 @@
   <script>
     function preparePrint() {
       const amount = document.getElementById("amount").value;
-      const paymentMethod = document.getElementById("payment-method").value;
       const output = document.getElementById("payment-output");
+      const title = document.getElementById("doc-title").value;
+      document.getElementById("doc-title-print").textContent = title || "سند قبض";
 
-      if (amount && paymentMethod) {
+      if (amount) {
         const amountInWords = convertNumberToArabicWords(Number(amount));
-        output.innerHTML = `<span class="payment-box">${amount} (${amountInWords})</span>${paymentMethod}`;
+        output.innerHTML = `<span class="payment-box">${amount} (${amountInWords})</span>`;
       } else {
         output.innerHTML = "________";
       }
@@ -132,8 +181,10 @@
       window.print();
     }
 
+    // تحويل الرقم إلى كلمات
     function convertNumberToArabicWords(number) {
       if (isNaN(number) || number === 0) return "صفر";
+
       const ones = ["", "واحد", "اثنان", "ثلاثة", "أربعة", "خمسة", "ستة", "سبعة", "ثمانية", "تسعة"];
       const tens = ["", "عشرة", "عشرون", "ثلاثون", "أربعون", "خمسون", "ستون", "سبعون", "ثمانون", "تسعون"];
       const hundreds = ["", "مائة", "مئتان", "ثلاثمائة", "أربعمائة", "خمسمائة", "ستمائة", "سبعمائة", "ثمانمائة", "تسعمائة"];
