@@ -10,7 +10,6 @@
       padding: 20px;
       max-width: 800px;
       margin: auto;
-      background: #f9f9f9;
       direction: rtl;
     }
 
@@ -46,23 +45,25 @@
       display: none;
     }
 
-    h2, .title-input {
-      text-align: center;
-      margin-bottom: 20px;
-      font-size: 24px;
-    }
-
     .title-input {
-      border: none;
-      font-size: 24px;
       text-align: center;
+      font-size: 24px;
       width: 100%;
+      border: none;
       background: transparent;
+      margin-bottom: 20px;
     }
 
-    label {
-      display: block;
-      margin: 10px 0 5px;
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+
+    .field {
+      margin-bottom: 10px;
+      min-width: 200px;
     }
 
     input, textarea {
@@ -72,35 +73,19 @@
       box-sizing: border-box;
     }
 
-    .section {
-      margin-bottom: 20px;
-      background: #fff;
-      padding: 15px;
-      border-radius: 6px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-    }
-
-    .row {
-      display: flex;
-      gap: 15px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .row .field {
-      flex: 1;
-      min-width: 200px;
+    .payment-label {
+      font-weight: bold;
+      margin-top: 20px;
     }
 
     .payment-box {
       border: 1px solid #000;
-      padding: 10px 15px;
+      padding: 10px;
       font-size: 18px;
       font-weight: bold;
-      display: inline-block;
-      margin-top: 10px;
-      min-width: 120px;
       text-align: center;
+      margin-top: 5px;
+      min-height: 40px;
     }
 
     .signatures {
@@ -117,56 +102,43 @@
       text-align: center;
       min-height: 80px;
     }
-
-    .header-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 15px;
-    }
-
-    .header-row .field {
-      flex: 1;
-      margin-left: 10px;
-    }
   </style>
 </head>
 <body>
 
-  <div class="screen-only">
-    <input class="title-input" id="doc-title" value="سند قبض" />
+  <input class="title-input screen-only" id="doc-title" value="سند قبض قابل للتعديل" />
+  <h2 class="print-only" id="doc-title-print">سند قبض</h2>
+
+  <div class="header-row">
+    <div class="field">
+      <label>رقم السند:</label>
+      <input type="text" id="doc-number" placeholder="12345" />
+    </div>
+    <div class="field">
+      <label>اسم العميل:</label>
+      <input type="text" placeholder="اكتب اسم العميل">
+    </div>
+    <div class="field">
+      <label>التاريخ:</label>
+      <input type="date">
+    </div>
   </div>
+
+  <div class="field screen-only">
+    <label>المبلغ:</label>
+    <input type="number" id="amount" placeholder="أدخل المبلغ">
+  </div>
+
+  <!-- يظهر فقط عند الطباعة -->
   <div class="print-only">
-    <h2 id="doc-title-print">سند قبض</h2>
+    <div class="payment-label">المبلغ:</div>
+    <div class="payment-box" id="payment-output"></div>
   </div>
 
-  <div class="section">
-    <div class="header-row">
-      <div class="field">
-        <label>رقم السند:</label>
-        <input type="text" id="doc-number" placeholder="12345" />
-      </div>
-      <div class="field">
-        <label>اسم العميل:</label>
-        <input type="text" placeholder="اكتب اسم العميل">
-      </div>
-      <div class="field">
-        <label>التاريخ:</label>
-        <input type="date">
-      </div>
-    </div>
+  <label>وذلك عن:</label>
+  <textarea rows="2" placeholder="مثال: دفعة على الحساب، تسديد فاتورة رقم ..."></textarea>
 
-    <input type="number" id="amount" placeholder="المبلغ">
-
-    <!-- يظهر فقط عند الطباعة -->
-    <div class="print-only">
-      <div class="payment-box" id="payment-output"></div>
-    </div>
-
-    <label>وذلك عن:</label>
-    <textarea rows="2" placeholder="مثال: دفعة على الحساب، تسديد فاتورة رقم ..."></textarea>
-  </div>
-
-  <div class="section signatures">
+  <div class="signatures">
     <div class="signature-box">توقيع المستلم</div>
     <div class="signature-box">توقيع المحاسب</div>
   </div>
@@ -178,14 +150,8 @@
       const amount = document.getElementById("amount").value;
       const output = document.getElementById("payment-output");
       const title = document.getElementById("doc-title").value;
-
-      // تحديث العنوان
       document.getElementById("doc-title-print").textContent = title || "سند قبض";
-
-      // إظهار المبلغ فقط داخل بوكس
-      output.innerHTML = amount ? amount : "";
-
-      // طباعة
+      output.textContent = amount ? amount : '';
       window.print();
     }
   </script>
