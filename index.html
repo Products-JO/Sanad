@@ -147,9 +147,8 @@
     <label>المبلغ:</label>
     <input type="number" id="amount" placeholder="مثال: 2500">
 
-    <!-- يظهر فقط عند الطباعة -->
+    <!-- فقط عند الطباعة -->
     <div class="print-only">
-      <label>المبلغ عند الطباعة:</label>
       <div class="payment-print" id="payment-output"></div>
     </div>
 
@@ -173,15 +172,14 @@
 
       if (amount) {
         const amountInWords = convertNumberToArabicWords(Number(amount));
-        output.innerHTML = `<span class="payment-box">${amount} (${amountInWords})</span>`;
+        output.innerHTML = `<div class="payment-box">${amount} (${amountInWords})</div>`;
       } else {
-        output.innerHTML = "________";
+        output.innerHTML = "";
       }
 
       window.print();
     }
 
-    // تحويل الرقم إلى كلمات
     function convertNumberToArabicWords(number) {
       if (isNaN(number) || number === 0) return "صفر";
 
