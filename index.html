@@ -157,10 +157,6 @@
       font-size: 18px;
       margin-bottom: 5px;
     }
-    #print-date-text {
-      font-size: 18px;
-      margin-top: 20px;
-    }
   </style>
 </head>
 <body>
@@ -183,9 +179,13 @@
       <label>اسم العميل</label>
       <input type="text" id="customer-name" placeholder="اكتب اسم العميل" />
     </div>
-    <div class="field">
+    <div class="field screen-only">
       <label>التاريخ</label>
       <input type="date" id="doc-date" />
+    </div>
+    <!-- التاريخ عند الطباعة فقط -->
+    <div class="field print-only" id="print-date-line">
+      <label id="print-date-label"></label>
     </div>
   </div>
 
@@ -198,7 +198,6 @@
 
   <!-- طباعة فقط -->
   <div class="print-only">
-    <div id="print-date-text"></div>
     <div class="payment-label">المبلغ:</div>
     <div class="payment-section">
       <div class="amount-box" id="print-amount-value"></div>
@@ -230,11 +229,9 @@
 
   <script>
     document.getElementById("print-btn").addEventListener("click", () => {
-      // عرض العنوان للطباعة
       const title = document.getElementById("doc-title").value;
       document.getElementById("doc-title-print").textContent = title || "سند قبض";
 
-      // تحديث البيانات المعروضة للطباعة
       const value = document.getElementById("amount-value").value;
       const text = document.getElementById("amount-text").value;
       document.getElementById("print-amount-value").textContent = value;
@@ -243,22 +240,14 @@
       const rawDate = document.getElementById("doc-date").value;
       if (rawDate) {
         const [year, month, day] = rawDate.split("-");
-        const formatted = `${toArabicNumber(day)}-${toArabicNumber(month)}-${toArabicNumber(year)}`;
-        document.getElementById("print-date-text").textContent = formatted;
+        const formatted = `${day}-${month}-${year}`; // English format
+        document.getElementById("print-date-label").textContent = `التاريخ: ${formatted}`;
       } else {
-        document.getElementById("print-date-text").textContent = "";
+        document.getElementById("print-date-label").textContent = "";
       }
 
       window.print();
     });
-
-    function toArabicNumber(str) {
-      const numbers = {
-        "0": "٠", "1": "١", "2": "٢", "3": "٣", "4": "٤",
-        "5": "٥", "6": "٦", "7": "٧", "8": "٨", "9": "٩"
-      };
-      return String(str).split("").map(c => numbers[c] || c).join("");
-    }
 
     function setupCanvas(canvasId) {
       const canvas = document.getElementById(canvasId);
