@@ -39,6 +39,10 @@
       .screen-only {
         display: none !important;
       }
+
+      .date-label input {
+        border: none !important;
+      }
     }
 
     .print-only {
@@ -75,27 +79,26 @@
       box-sizing: border-box;
     }
 
-    input[type="date"] {
-      padding: 6px 10px;
-      width: 160px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-
     .payment-label {
       margin-top: 20px;
       font-size: 18px;
     }
 
-    .payment-box {
+    .payment-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .amount-box, .amount-text {
       border: 1px solid #000;
       padding: 10px;
       font-size: 18px;
-      display: inline-block;
-      white-space: nowrap;
-      margin-top: 5px;
       min-height: 35px;
+      flex: 1;
+      white-space: nowrap;
     }
 
     .signatures {
@@ -139,6 +142,12 @@
     textarea {
       margin-top: 5px;
     }
+
+    input[type="date"] {
+      width: 100%;
+      font-size: 16px;
+      padding: 8px;
+    }
   </style>
 </head>
 <body>
@@ -155,21 +164,26 @@
       <label>اسم العميل:</label>
       <input type="text" id="customer-name" placeholder="اكتب اسم العميل" />
     </div>
-    <div class="field">
+    <div class="field date-label">
       <label>التاريخ:</label>
-      <input type="date" />
+      <input type="date" id="doc-date" />
     </div>
   </div>
 
-  <div class="field screen-only">
+  <!-- شاشة فقط -->
+  <div class="screen-only">
     <label>المبلغ:</label>
-    <input type="text" id="amount" placeholder="أدخل المبلغ أو النص">
+    <input type="text" id="amount-value" placeholder="أدخل الرقم فقط (مثلاً: 2500)" />
+    <textarea rows="2" id="amount-text" placeholder="أدخل النص مثلاً: فقط ألفان وخمسمئة دينار"></textarea>
   </div>
 
-  <!-- يظهر فقط عند الطباعة -->
+  <!-- طباعة فقط -->
   <div class="print-only">
     <div class="payment-label">المبلغ:</div>
-    <div class="payment-box" id="payment-output"></div>
+    <div class="payment-section">
+      <div class="amount-box" id="print-amount-value"></div>
+      <div class="amount-text" id="print-amount-text"></div>
+    </div>
   </div>
 
   <label>وذلك عن:</label>
@@ -196,11 +210,12 @@
 
   <script>
     function preparePrint() {
-      const amount = document.getElementById("amount").value;
-      const output = document.getElementById("payment-output");
+      const value = document.getElementById("amount-value").value;
+      const text = document.getElementById("amount-text").value;
+      document.getElementById("print-amount-value").textContent = value;
+      document.getElementById("print-amount-text").textContent = text;
       const title = document.getElementById("doc-title").value;
       document.getElementById("doc-title-print").textContent = title || "سند قبض";
-      output.textContent = amount ? amount : '';
       window.print();
     }
 
