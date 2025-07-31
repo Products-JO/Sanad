@@ -12,45 +12,16 @@
       margin: auto;
       direction: rtl;
     }
-
-    .no-print {
-      display: block;
-      margin-bottom: 15px;
-    }
-
+    .no-print { display: block; margin-bottom: 15px; }
     @media print {
-      .no-print {
-        display: none;
-      }
-
-      input, textarea {
-        border: none;
-        outline: none;
-      }
-
-      input[type="date"] {
-        border: none !important;
-        background: transparent !important;
-      }
-
-      .print-only {
-        display: block !important;
-      }
-
-      .screen-only {
-        display: none !important;
-      }
+      .no-print { display: none; }
+      input, textarea { border: none; outline: none; }
+      input[type="date"] { border: none !important; background: transparent !important; }
+      .print-only { display: block !important; }
+      .screen-only { display: none !important; }
     }
-
-    .print-only {
-      display: none;
-    }
-
-    .title-container {
-      text-align: center;
-      margin-bottom: 15px;
-    }
-
+    .print-only { display: none; }
+    .title-container { text-align: center; margin-bottom: 15px; }
     .title-input {
       font-size: 32px;
       font-weight: bold;
@@ -61,14 +32,12 @@
       padding: 0;
       text-align: center;
     }
-
     #doc-title-print {
       font-size: 32px;
       font-weight: bold;
       margin: 0;
       padding: 0;
     }
-
     #subtitle {
       font-size: 18px;
       color: #555;
@@ -76,14 +45,12 @@
       font-weight: normal;
       line-height: 1.3;
     }
-
     #subtitle-subs {
       font-size: 18px;
       color: #555;
       margin-top: 2px;
       font-weight: normal;
     }
-
     .header-row {
       display: flex;
       flex-direction: column;
@@ -92,11 +59,9 @@
       direction: rtl;
       align-items: flex-start;
     }
-
     .field {
       width: 100%;
     }
-
     .field label {
       display: block;
       font-size: 18px;
@@ -105,7 +70,6 @@
       margin-bottom: 6px;
       padding-right: 12px;
     }
-
     .field input {
       width: 100%;
       padding: 8px;
@@ -113,17 +77,14 @@
       box-sizing: border-box;
       text-align: right;
     }
-
     input, textarea {
       font-size: 16px;
       box-sizing: border-box;
     }
-
     .payment-label {
       margin-top: 20px;
       font-size: 18px;
     }
-
     .payment-section {
       display: flex;
       flex-wrap: wrap;
@@ -131,7 +92,6 @@
       align-items: center;
       margin-top: 10px;
     }
-
     .amount-box, .amount-text {
       border: 1px solid #000;
       font-size: 18px;
@@ -141,7 +101,6 @@
       min-height: 35px;
       max-width: 100%;
     }
-
     .signatures {
       display: flex;
       justify-content: space-between;
@@ -149,36 +108,30 @@
       margin-top: 30px;
       flex-wrap: wrap;
     }
-
     .signature-area {
       flex: 1;
       text-align: center;
     }
-
     .signature-box {
       border: 1px solid #000;
       min-height: 100px;
       margin-bottom: 5px;
     }
-
     canvas {
       width: 100%;
       height: 100px;
       border: 1px solid #ccc;
       touch-action: none;
     }
-
     button.clear-btn {
       margin-top: 5px;
       font-size: 14px;
       cursor: pointer;
     }
-
     label {
       margin-top: 20px;
       display: block;
     }
-
     textarea#about-text {
       margin-top: 5px;
       width: 100%;
@@ -193,20 +146,17 @@
       white-space: normal;
       overflow-y: auto;
     }
-
     input[type="date"] {
       width: 100%;
       font-size: 16px;
       padding: 8px;
       text-align: right;
     }
-
     .amount-inputs input, .amount-inputs textarea {
       width: 100%;
       font-size: 18px;
       margin-bottom: 5px;
     }
-
     #print-date-text {
       font-size: 18px;
       margin-top: 20px;
@@ -217,8 +167,8 @@
 
   <div class="title-container">
     <input class="title-input screen-only" id="doc-title" value="سند قبض" />
-    <div class="print-only" style="display: inline-block;">
-    
+    <div id="doc-title-print" class="print-only"></div>
+    <div class="print-only" style="margin-top:5px;">
       <div id="subtitle">(سند قبض )</div>
       <div id="subtitle">( نقدا /ذمم )</div>
     </div>
@@ -276,17 +226,19 @@
     </div>
   </div>
 
-  <button class="no-print" onclick="preparePrint()">🖨️ طباعة</button>
+  <button class="no-print" id="print-btn">🖨️ طباعة</button>
 
   <script>
-    function preparePrint() {
+    document.getElementById("print-btn").addEventListener("click", () => {
+      // عرض العنوان للطباعة
+      const title = document.getElementById("doc-title").value;
+      document.getElementById("doc-title-print").textContent = title || "سند قبض";
+
+      // تحديث البيانات المعروضة للطباعة
       const value = document.getElementById("amount-value").value;
       const text = document.getElementById("amount-text").value;
       document.getElementById("print-amount-value").textContent = value;
       document.getElementById("print-amount-text").textContent = text;
-
-      const title = document.getElementById("doc-title").value;
-      document.getElementById("doc-title-print").textContent = title || "سند قبض";
 
       const rawDate = document.getElementById("doc-date").value;
       if (rawDate) {
@@ -298,7 +250,7 @@
       }
 
       window.print();
-    }
+    });
 
     function toArabicNumber(str) {
       const numbers = {
