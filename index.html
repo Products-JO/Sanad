@@ -27,7 +27,6 @@
       input, textarea {
         border: none;
         outline: none;
-        -webkit-appearance: none;
       }
 
       input[type="date"]::-webkit-calendar-picker-indicator {
@@ -104,6 +103,7 @@
       min-width: 100px;
       text-align: center;
       display: inline-block;
+      font-weight: bold;
     }
 
     .signatures {
@@ -120,6 +120,17 @@
       text-align: center;
       min-height: 80px;
     }
+
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+
+    .header-row .field {
+      flex: 1;
+      margin-left: 10px;
+    }
   </style>
 </head>
 <body>
@@ -132,8 +143,11 @@
   </div>
 
   <div class="section">
-
-    <div class="row">
+    <div class="header-row">
+      <div class="field">
+        <label>رقم السند:</label>
+        <input type="text" id="doc-number" placeholder="12345" />
+      </div>
       <div class="field">
         <label>اسم العميل:</label>
         <input type="text" placeholder="اكتب اسم العميل">
@@ -168,8 +182,12 @@
       const amount = document.getElementById("amount").value;
       const output = document.getElementById("payment-output");
       const title = document.getElementById("doc-title").value;
+      const docNum = document.getElementById("doc-number").value;
+
+      // تحديث العنوان
       document.getElementById("doc-title-print").textContent = title || "سند قبض";
 
+      // تحديث المبلغ
       if (amount) {
         const amountInWords = convertNumberToArabicWords(Number(amount));
         output.innerHTML = `<div class="payment-box">${amount} (${amountInWords})</div>`;
@@ -177,6 +195,7 @@
         output.innerHTML = "";
       }
 
+      // طباعة
       window.print();
     }
 
