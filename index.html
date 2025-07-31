@@ -92,18 +92,15 @@
       min-width: 200px;
     }
 
-    .payment-print {
-      font-size: 18px;
-      margin-top: 10px;
-    }
-
     .payment-box {
       border: 1px solid #000;
-      padding: 6px 10px;
-      min-width: 100px;
-      text-align: center;
-      display: inline-block;
+      padding: 10px 15px;
+      font-size: 18px;
       font-weight: bold;
+      display: inline-block;
+      margin-top: 10px;
+      min-width: 120px;
+      text-align: center;
     }
 
     .signatures {
@@ -158,12 +155,11 @@
       </div>
     </div>
 
-    <label>المبلغ:</label>
-    <input type="number" id="amount" placeholder="مثال: 2500">
+    <input type="number" id="amount" placeholder="المبلغ">
 
-    <!-- فقط عند الطباعة -->
+    <!-- يظهر فقط عند الطباعة -->
     <div class="print-only">
-      <div class="payment-print" id="payment-output"></div>
+      <div class="payment-box" id="payment-output"></div>
     </div>
 
     <label>وذلك عن:</label>
@@ -182,62 +178,15 @@
       const amount = document.getElementById("amount").value;
       const output = document.getElementById("payment-output");
       const title = document.getElementById("doc-title").value;
-      const docNum = document.getElementById("doc-number").value;
 
       // تحديث العنوان
       document.getElementById("doc-title-print").textContent = title || "سند قبض";
 
-      // تحديث المبلغ
-      if (amount) {
-        const amountInWords = convertNumberToArabicWords(Number(amount));
-        output.innerHTML = `<div class="payment-box">${amount} (${amountInWords})</div>`;
-      } else {
-        output.innerHTML = "";
-      }
+      // إظهار المبلغ فقط داخل بوكس
+      output.innerHTML = amount ? amount : "";
 
       // طباعة
       window.print();
-    }
-
-    function convertNumberToArabicWords(number) {
-      if (isNaN(number) || number === 0) return "صفر";
-
-      const ones = ["", "واحد", "اثنان", "ثلاثة", "أربعة", "خمسة", "ستة", "سبعة", "ثمانية", "تسعة"];
-      const tens = ["", "عشرة", "عشرون", "ثلاثون", "أربعون", "خمسون", "ستون", "سبعون", "ثمانون", "تسعون"];
-      const hundreds = ["", "مائة", "مئتان", "ثلاثمائة", "أربعمائة", "خمسمائة", "ستمائة", "سبعمائة", "ثمانمائة", "تسعمائة"];
-
-      let word = "";
-      let n = number;
-
-      if (n >= 1000) {
-        const thousands = Math.floor(n / 1000);
-        word += (thousands === 1 ? "ألف" :
-                thousands === 2 ? "ألفان" :
-                thousands <= 10 ? ones[thousands] + " آلاف" :
-                thousands + " ألف") + " ";
-        n %= 1000;
-      }
-
-      if (n >= 100) {
-        const h = Math.floor(n / 100);
-        word += hundreds[h] + " ";
-        n %= 100;
-      }
-
-      if (n >= 10) {
-        const t = Math.floor(n / 10);
-        const o = n % 10;
-        if (n < 20 && n > 10) {
-          word += ones[o] + " " + "عشر";
-        } else {
-          if (o > 0) word += ones[o] + " و ";
-          word += tens[t];
-        }
-      } else if (n > 0) {
-        word += ones[n];
-      }
-
-      return word.trim();
     }
   </script>
 
