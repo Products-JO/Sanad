@@ -46,32 +46,75 @@
       display: none;
     }
 
-    .title-input {
+    .title-container {
       text-align: center;
-      font-size: 24px;
+      margin-bottom: 15px;
+    }
+
+    .title-input {
+      font-size: 32px;
+      font-weight: bold;
       width: 100%;
       border: none;
       background: transparent;
-      margin-bottom: 20px;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    #doc-title-print {
+      font-size: 32px;
+      font-weight: bold;
+      margin: 0;
+      padding: 0;
+    }
+
+    #subtitle {
+      font-size: 18px;
+      color: #555;
+      margin-top: 4px;
+      font-weight: normal;
+      line-height: 1.3;
+    }
+
+    #subtitle-subs {
+      font-size: 18px;
+      color: #555;
+      margin-top: 2px;
+      font-weight: normal;
     }
 
     .header-row {
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
+      gap: 15px;
       margin-bottom: 15px;
-      flex-wrap: wrap;
-      gap: 10px;
+      direction: rtl;
+      align-items: flex-start;
     }
 
     .field {
-      margin-bottom: 10px;
-      min-width: 200px;
-      flex: 1;
+      width: 100%;
+    }
+
+    .field label {
+      display: block;
+      font-size: 18px;
+      font-weight: bold;
+      text-align: right;
+      margin-bottom: 6px;
+      padding-right: 12px;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 8px;
+      font-size: 16px;
+      box-sizing: border-box;
+      text-align: right;
     }
 
     input, textarea {
-      width: 100%;
-      padding: 8px;
       font-size: 16px;
       box-sizing: border-box;
     }
@@ -132,19 +175,30 @@
     }
 
     label {
-      font-size: 18px;
       margin-top: 20px;
       display: block;
     }
 
-    textarea {
+    textarea#about-text {
       margin-top: 5px;
+      width: 100%;
+      font-size: 16px;
+      height: 100px;
+      resize: vertical;
+      font-weight: 300;
+      direction: rtl;
+      padding: 8px;
+      box-sizing: border-box;
+      text-align: right;
+      white-space: normal;
+      overflow-y: auto;
     }
 
     input[type="date"] {
       width: 100%;
       font-size: 16px;
       padding: 8px;
+      text-align: right;
     }
 
     .amount-inputs input, .amount-inputs textarea {
@@ -152,24 +206,35 @@
       font-size: 18px;
       margin-bottom: 5px;
     }
+
+    #print-date-text {
+      font-size: 18px;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
 
-  <input class="title-input screen-only" id="doc-title" value="سند قبض قابل للتعديل" />
-  <h2 class="print-only" id="doc-title-print">سند قبض</h2>
+  <div class="title-container">
+    <input class="title-input screen-only" id="doc-title" value="سند قبض" />
+    <div class="print-only" style="display: inline-block;">
+    
+      <div id="subtitle">(سند قبض )</div>
+      <div id="subtitle">( نقدا /ذمم )</div>
+    </div>
+  </div>
 
   <div class="header-row">
     <div class="field">
-      <label>رقم السند:</label>
+      <label>رقم السند</label>
       <input type="text" id="doc-number" placeholder="12345" />
     </div>
     <div class="field">
-      <label>اسم العميل:</label>
+      <label>اسم العميل</label>
       <input type="text" id="customer-name" placeholder="اكتب اسم العميل" />
     </div>
     <div class="field">
-      <label>التاريخ:</label>
+      <label>التاريخ</label>
       <input type="date" id="doc-date" />
     </div>
   </div>
@@ -183,6 +248,7 @@
 
   <!-- طباعة فقط -->
   <div class="print-only">
+    <div id="print-date-text"></div>
     <div class="payment-label">المبلغ:</div>
     <div class="payment-section">
       <div class="amount-box" id="print-amount-value"></div>
@@ -190,8 +256,8 @@
     </div>
   </div>
 
-  <label>وذلك عن:</label>
-  <textarea rows="2" placeholder="مثال: دفعة على الحساب، تسديد فاتورة رقم ..."></textarea>
+  <label for="about-text">وذلك عن</label>
+  <textarea id="about-text" placeholder="مثال: دفعة على الحساب، تسديد فاتورة رقم ..."></textarea>
 
   <div class="signatures">
     <div class="signature-area">
@@ -221,7 +287,25 @@
 
       const title = document.getElementById("doc-title").value;
       document.getElementById("doc-title-print").textContent = title || "سند قبض";
+
+      const rawDate = document.getElementById("doc-date").value;
+      if (rawDate) {
+        const [year, month, day] = rawDate.split("-");
+        const formatted = `${toArabicNumber(day)}-${toArabicNumber(month)}-${toArabicNumber(year)}`;
+        document.getElementById("print-date-text").textContent = formatted;
+      } else {
+        document.getElementById("print-date-text").textContent = "";
+      }
+
       window.print();
+    }
+
+    function toArabicNumber(str) {
+      const numbers = {
+        "0": "٠", "1": "١", "2": "٢", "3": "٣", "4": "٤",
+        "5": "٥", "6": "٦", "7": "٧", "8": "٨", "9": "٩"
+      };
+      return String(str).split("").map(c => numbers[c] || c).join("");
     }
 
     function setupCanvas(canvasId) {
